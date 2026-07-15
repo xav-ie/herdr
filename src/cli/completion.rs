@@ -72,14 +72,10 @@ fn space_separated_zsh_long_options(script: &str) -> String {
 }
 
 fn parse_shell(shell: &str) -> Option<Shell> {
-    match shell {
-        value if value == SUPPORTED_SHELLS[0] => Some(Shell::Bash),
-        value if value == SUPPORTED_SHELLS[1] => Some(Shell::Elvish),
-        value if value == SUPPORTED_SHELLS[2] => Some(Shell::Fish),
-        value if value == SUPPORTED_SHELLS[3] => Some(Shell::PowerShell),
-        value if value == SUPPORTED_SHELLS[4] => Some(Shell::Zsh),
-        _ => None,
+    if !SUPPORTED_SHELLS.contains(&shell) {
+        return None;
     }
+    shell.parse().ok()
 }
 
 fn print_completion_help() {
