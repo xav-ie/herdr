@@ -1,8 +1,14 @@
 use std::io::Write;
 
 use clap_complete::{generate, Shell};
+use clap_complete_nushell::Nushell;
 
-pub(super) const SUPPORTED_SHELLS: [&str; 5] = ["bash", "elvish", "fish", "powershell", "zsh"];
+// nushell isn't a clap_complete::Shell variant (it ships its own Generator), so
+// it's handled as a special case rather than through parse_shell/Shell.
+const NUSHELL: &str = "nushell";
+
+pub(super) const SUPPORTED_SHELLS: [&str; 6] =
+    ["bash", "elvish", "fish", NUSHELL, "powershell", "zsh"];
 
 pub(super) fn supported_shells_usage() -> String {
     SUPPORTED_SHELLS.join("|")
@@ -20,6 +26,12 @@ pub(super) fn run_completion_command(args: &[String]) -> std::io::Result<i32> {
     if args.len() != 1 {
         print_completion_help();
         return Ok(2);
+    }
+
+    if shell == NUSHELL {
+        let mut command = super::spec::command();
+        generate(Nushell, &mut command, "herdr", &mut std::io::stdout());
+        return Ok(0);
     }
 
     let Some(shell) = parse_shell(shell) else {
@@ -95,6 +107,8 @@ mod tests {
             Some(clap_complete::Shell::PowerShell)
         ));
         assert!(super::parse_shell("tcsh").is_none());
+        // nushell is not a clap Shell variant; it's handled before parse_shell.
+        assert!(super::parse_shell("nushell").is_none());
     }
 
     #[test]

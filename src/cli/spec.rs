@@ -1127,6 +1127,7 @@ mod tests {
             .collect::<Vec<_>>();
         assert!(shells.contains(&"zsh".to_string()));
         assert!(shells.contains(&"fish".to_string()));
+        assert!(shells.contains(&"nushell".to_string()));
     }
 
     #[test]
@@ -1383,5 +1384,16 @@ mod tests {
             clap_complete::generate(shell, &mut cmd, "herdr", &mut output);
             assert!(!output.is_empty(), "empty {shell:?} completion output");
         }
+
+        // nushell ships its own Generator rather than a clap_complete::Shell variant.
+        let mut cmd = super::command();
+        let mut output = Vec::new();
+        clap_complete::generate(
+            clap_complete_nushell::Nushell,
+            &mut cmd,
+            "herdr",
+            &mut output,
+        );
+        assert!(!output.is_empty(), "empty nushell completion output");
     }
 }
