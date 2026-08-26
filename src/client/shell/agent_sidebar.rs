@@ -354,7 +354,10 @@ pub(super) fn render_agent_row(
         row.rows.clone()
     };
     for (index, tokens) in rows.iter().take(rect.height as usize).enumerate() {
-        let indent = if index == 0 { 1 } else { 3 };
+        // Every row starts flush at one column. Indenting continuation rows
+        // staggers entries against each other once a row can be dropped (an
+        // optional `$space_header`, say) and costs width the sidebar lacks.
+        let indent = 1;
         let mut spans = vec![ratatui::text::Span::raw(" ".repeat(indent))];
         spans.extend(crate::ui::resolved_token_spans(
             tokens,
