@@ -1396,4 +1396,21 @@ mod tests {
         );
         assert!(!output.is_empty(), "empty nushell completion output");
     }
+
+    #[test]
+    fn positional_ids_are_valid_nushell_parameter_names() {
+        fn walk(cmd: &clap::Command, path: &str, bad: &mut Vec<String>) {
+            for arg in cmd.get_positionals() {
+                if arg.get_id().as_str().contains('-') {
+                    bad.push(format!("{path} <{}>", arg.get_id()));
+                }
+            }
+            for sub in cmd.get_subcommands() {
+                walk(sub, &format!("{path} {}", sub.get_name()), bad);
+            }
+        }
+        let mut bad = Vec::new();
+        walk(&super::command(), "herdr", &mut bad);
+        assert!(bad.is_empty(), "hyphenated positional ids break nushell completions: {bad:?}");
+    }
 }

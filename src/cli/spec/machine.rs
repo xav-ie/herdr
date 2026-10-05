@@ -25,7 +25,7 @@ pub(super) fn command() -> Command {
             Command::new("add")
                 .about("Prepare the remote Herdr server and save an SSH machine")
                 .arg(
-                    Arg::new("ssh-target")
+                    Arg::new("ssh_target")
                         .value_name("SSH_TARGET")
                         .required(true),
                 )
@@ -53,7 +53,7 @@ pub(super) fn command() -> Command {
 
 fn profile_command(name: &'static str, about: &'static str) -> Command {
     Command::new(name).about(about).arg(
-        Arg::new("profile-id")
+        Arg::new("profile_id")
             .value_name("PROFILE_ID")
             .required(true),
     )
